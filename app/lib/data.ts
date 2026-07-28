@@ -8,6 +8,7 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { clonePageVaryPathWithNewSearchParams } from 'next/dist/client/components/segment-cache/vary-path';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -17,7 +18,7 @@ export async function fetchRevenue() {
     // Don't do this in production :)
 
     // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const data = await sql<Revenue[]>`SELECT * FROM revenue`;
 
@@ -32,6 +33,7 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   try {
+
     const data = await sql<LatestInvoiceRaw[]>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
@@ -90,6 +92,8 @@ export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
 ) {
+  
+
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
